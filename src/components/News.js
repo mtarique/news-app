@@ -4,14 +4,42 @@ import NewsItem from './NewsItem'
 export class News extends Component {
     constructor() {
         super(); 
-        this.state = { articles: [], loading: false }
+        this.state = { articles: [], loading: false, page: 1 }
     }
 
     async componentDidMount() {
-        let response = await fetch("https://newsapi.org/v2/top-headlines?country=in&apiKey=2b98c9fc37b842cd85dd54abb673f30c"); 
+        let response = await fetch("https://newsapi.org/v2/top-headlines?country=in&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=1&pageSize=20"); 
         response = await response.json()
         //console.log(response);
-        this.setState({articles: response.articles})
+        this.setState({articles: response.articles, totalResults: response.totalResults})
+    }
+
+    handleNextClick = async () => {
+      console.log("Next");  
+      if(this.state.page + 1 > Math.ceil(this.state.totalResults/20)) {
+        
+      } else {
+        let response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=${this.state.page + 1}&pageSize=20`); 
+        response = await response.json()
+        //console.log(response);
+        
+        this.setState({
+          articles: response.articles,
+          page: this.state.page+1
+        }) 
+      }
+    }
+
+    handlePrevClick = async () => {
+      console.log("Previous")
+      let response = await fetch(`https://newsapi.org/v2/top-headlines?country=in&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=${this.state.page - 1}&pageSize=20`); 
+      response = await response.json()
+      //console.log(response);
+      
+      this.setState({
+        articles: response.articles,
+        page: this.state.page-1
+      }) 
     }
   render() {
     return (
@@ -26,6 +54,10 @@ export class News extends Component {
                     </div>
                 }
             })}
+        </div>
+        <div className="d-flex justify-content-between">
+          <button disabled={this.state.page <= 1} className="btn btn-sm btn-dark" onClick={this.handlePrevClick}>&larr; Previous</button>
+          <button className="btn btn-sm btn-dark" onClick={this.handleNextClick}>Next &rarr;</button>
         </div>
       </div>
     )
