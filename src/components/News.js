@@ -67,7 +67,7 @@ export class News extends Component {
             {!this.state.loading && this.state.articles.map((article, idx) => {
                 if(article.title !== null && article.description !== null) {
                 return <div className="col-md-3 mb-3" key={idx}>
-                        <NewsItem title={article.title.slice(0, 45)} description={article.description.slice(0, 88)} imgUrl={article.urlToImage ? article.urlToImage : "https://demofree.sirv.com/nope-not-here.jpg"} newsUrl={article.url} />
+                        <NewsItem title={article.title.slice(0, 45)} description={article.description.slice(0, 88)} imgUrl={article.urlToImage ? article.urlToImage : "https://demofree.sirv.com/nope-not-here.jpg"} newsUrl={article.url} author={article.author ? article.author : "Unknown"} publishedAt={article.publishedAt} source={article.source.name ? article.source.name : "Unknown"} />
                     </div>
                 }
             })}
