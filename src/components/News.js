@@ -21,43 +21,28 @@ export class News extends Component {
         this.state = { articles: [], loading: false, page: 1 }
     }
 
-    async componentDidMount() {
-        let response = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=1&pageSize=${this.props.pageSize}`); 
+    async fetchNews() {
+      const url = `https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=${this.state.page}&pageSize=${this.props.pageSize}`; 
+      let response = await fetch(url); 
         this.setState({loading: true}); 
-        response = await response.json()
-        //console.log(response);
+        response = await response.json();
         this.setState({articles: response.articles, totalResults: response.totalResults, loading: false})
     }
 
+    async componentDidMount() {
+        this.fetchNews()
+    }
+
     handleNextClick = async () => {
-      // console.log("Next");  
-      if(!this.state.page + 1 < Math.ceil(this.state.totalResults/this.props.pageSize)) {
-        let response = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=${this.state.page + 1}&pageSize=${this.props.pageSize}`); 
-        this.setState({loading: true});  
-        response = await response.json()
-        //console.log(response);
-        
-        this.setState({
-          articles: response.articles,
-          page: this.state.page+1, 
-          loading: false
-        }) 
-      }
+      await this.setState({page: this.state.page+1})
+      this.fetchNews(); 
     }
 
     handlePrevClick = async () => {
-      console.log("Previous")
-      let response = await fetch(`https://newsapi.org/v2/top-headlines?country=${this.props.country}&category=${this.props.category}&apiKey=2b98c9fc37b842cd85dd54abb673f30c&page=${this.state.page - 1}&pageSize=${this.props.pageSize}`); 
-      this.setState({loading: true}); 
-      response = await response.json()
-      //console.log(response);
-      
-      this.setState({
-        articles: response.articles,
-        page: this.state.page-1, 
-        loading: false
-      }) 
+      await this.setState({page: this.state.page-1})
+      this.fetchNews()
     }
+
   render() {
     return (
       <div className='container my-3'>
