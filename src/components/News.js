@@ -10,13 +10,11 @@ const News = (props) => {
   const [page, setPage] = useState(1)
   const [totalResults, setTotalResult] = useState(0)
 
-  // document.title = this.capitalizeFirstLetter(this.props.category) + " - NewsMonkey";
-
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1);
   };
 
-  const fetchNews = async (props) => {
+  const fetchNews = async () => {
     props.setProgress(10)
     const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
     let response = await fetch(url);
@@ -32,6 +30,7 @@ const News = (props) => {
 
   useEffect(() => {
     fetchNews();
+    document.title = capitalizeFirstLetter(props.category) + " - NewsMonkey";
   }, [])
 
   const handleNextClick = async () => {
@@ -44,20 +43,16 @@ const News = (props) => {
     fetchNews();
   };
 
-  const fetchMoreData = async (props) => {
+  const fetchMoreData = async () => {
     // a fake async api call like which sends
     // 20 more records in 1.5 secs
+    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page+1}&pageSize=${props.pageSize}`;
     setPage(page+1);
-    // this.fetchNews();
-    const url = `https://newsapi.org/v2/top-headlines?country=${props.country}&category=${props.category}&apiKey=${props.apiKey}&page=${page}&pageSize=${props.pageSize}`;
     let response = await fetch(url);
-    setLoading(true);
     response = await response.json();
     setArticle(article.concat(response.articles)); 
-    setTotalResult(response.totalResults); 
-    setLoading(false); 
+    setTotalResult(response.totalResults);
   };
-
  
   return (
     <>
@@ -65,7 +60,7 @@ const News = (props) => {
         dataLength={article.length}
         next={fetchMoreData}
         hasMore={article.length <= totalResults}
-        loader={<Spinner />}
+        loader={loading && <Spinner />}
       >
         <div className="container my-3">
           <h1 className="mb-3">
